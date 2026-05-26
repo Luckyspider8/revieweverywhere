@@ -317,6 +317,8 @@ const PLATFORM_CATALOG = [
   { id:"twitter",           name:"X (Twitter)",         category:"social",       default_url_pattern:"https://twitter.com/",                         icon:"X",  color:"#14171A", active:true, pri:122 },
   { id:"youtube",           name:"YouTube",             category:"social",       default_url_pattern:"https://www.youtube.com/",                     icon:"YT", color:"#FF0000", active:true, pri:123 },
   { id:"reddit",            name:"Reddit",              category:"social",       default_url_pattern:"https://www.reddit.com/",                      icon:"r/", color:"#FF4500", active:true, pri:124 },
+  { id:"target", name:"Target", category:"shopping", icon:"T", color:"#CC0000", default_url_pattern:"https://www.target.com/reviews", active:true, pri:5 }
+,
   { id:"amazon", name:"Amazon", category:"shopping", icon:"A", color:"#FF9900", default_url_pattern:"https://www.amazon.com/review/create-review", active:true, pri:1 },
   { id:"etsy", name:"Etsy", category:"shopping", icon:"E", color:"#F56400", default_url_pattern:"https://www.etsy.com/your/purchases", active:true, pri:2 },
   { id:"ebay", name:"eBay", category:"shopping", icon:"e", color:"#E53238", default_url_pattern:"https://www.ebay.com/fdbk/leave_feedback", active:true, pri:3 },
@@ -862,11 +864,9 @@ function AuthPage({ navigate, onLogin, setBusinessProfile, setBizPlatforms }) {
     try {
       const { user, error } = await db.signIn(email, pw);
       if (error) {
-        // Fall back to demo login if DB not connected
-        console.log("Login error, using demo mode:", error.message);
-        onLogin("Demo Business", email);
-        navigate("dashboard");
-        return;
+        alert("Sign in failed: " + (error.message || "Invalid email or password."));
+      setLoading(false);
+      return;
       }
       if (user) {
         // Load their business from DB
@@ -879,9 +879,9 @@ function AuthPage({ navigate, onLogin, setBusinessProfile, setBizPlatforms }) {
         navigate("dashboard");
       }
     } catch (e) {
-      console.error("Login error:", e);
-      onLogin("Demo Business", email);
-      navigate("dashboard");
+    console.error("Login error:", e);
+    alert("Sign in failed. Please try again.");
+    setLoading(false);
     } finally {
       setLoading(false);
     }
